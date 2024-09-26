@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+
+if [ -z ${FOLDER} ];              # When running outside of workflow
+then
+    read -p "Folder (e.g. Metagenomics_zahn): " FOLDER
+else				  # When running in workflow
+    echo "Trimming reads from $FOLDER1"
+fi
+
+DIR=${FOLDER}/trimmed
+mkdir -p $DIR
+
+ADAPTERS=/home/nanoteam/programs/Trimmomatic-0.39/adapters/TruSeq3-PE-2.fa:2:30:10
+
+for file1 in $(ls ${FOLDER}/Fastq/*1_001.fastq.gz)
+do
+    file2=${file1%%1_001.fastq.gz}"2_001.fastq.gz"
+    sample=$(basename ${file1%%1_001.fastq.gz})
+    echo "Trimming $file1 and $file2"
+    
+    time java -jar /home/nanoteam/programs/Trimmomatic-0.39/trimmomatic-0.39.jar PE -phred33 \
+    $file1 $file2 \
+    ${DIR}/${sample}1_P.fastq.gz ${DIR}/${sample}1_UP.fastq.gz \
+    ${DIR}/${sample}2_P.fastq.gz ${DIR}/${sample}2_UP.fastq.gz \
+    ILLUMINACLIP:${ADAPTERS} LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36 
+    rm ${DIR}/${sample}1_UP.fastq.gz ${DIR}/${sample}2_UP.fastq.gz
+done

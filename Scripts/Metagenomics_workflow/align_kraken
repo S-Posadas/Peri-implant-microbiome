@@ -1,0 +1,30 @@
+#!/usr/bin/bash
+
+if [ -z ${FOLDER} ];              # When running outside of workflow
+then
+    read -p "Folder (e.g. Metagenomics_zahn): " FOLDER
+else				  # When running in workflow
+    echo "Running kraken2 on $FOLDER1"
+fi
+
+DATABASE=/home/nanoteam/Desktop/VMfiles-2/k2_standard_16gb_20221209
+
+DIR=${FOLDER}/kraken
+mkdir -p ${DIR}
+
+for file1 in $(ls ${FOLDER}/dekont/*R1.fastq.gz)
+   do
+    file2=${file1%%R1.fastq.gz}"R2.fastq.gz"
+    sample=$(basename ${file1%%_removed_R1.fastq.gz})
+    # For further analysis
+    time /home/nanoteam/programs/kraken2/kraken2 --db $DATABASE \
+    --paired $file1 $file2 \
+    --output "${DIR}/${sample}.kraken" \
+    --report "${DIR}/${sample}.kreport.txt" --use-names
+    # For krona
+    time /home/nanoteam/programs/kraken2/kraken2 --db $DATABASE \
+    --paired $file1 $file2 \
+    --output "${DIR}/${sample}.krona.kraken" 
+   done
+
+

@@ -1,0 +1,23 @@
+#!/usr/bin/bash
+
+
+if [ -z ${FOLDER} ];              # When running outside of workflow
+then
+    read -p "Folder (e.g. Metagenomics_zahn): " FOLDER
+else				  # When running in workflow
+    echo "Creating .biom file"
+fi
+
+DIR=${FOLDER}/biom
+mkdir -p $DIR
+
+time kraken-biom $(ls ${FOLDER}/kraken/*.txt) -o ${DIR}/A-table-kraken.biom
+time kraken-biom $(ls ${FOLDER}/bracken/*.D.txt) -o ${DIR}/D-table.biom
+time kraken-biom $(ls ${FOLDER}/bracken/*.P.txt) -o ${DIR}/P-table.biom
+time kraken-biom $(ls ${FOLDER}/bracken/*.C.txt) -o ${DIR}/C-table.biom
+time kraken-biom $(ls ${FOLDER}/bracken/*.O.txt) -o ${DIR}/O-table.biom
+time kraken-biom $(ls ${FOLDER}/bracken/*.F.txt) -o ${DIR}/F-table.biom
+time kraken-biom $(ls ${FOLDER}/bracken/*.G.txt) -o ${DIR}/G-table.biom
+time kraken-biom $(ls ${FOLDER}/bracken/*.S.txt) -o ${DIR}/S-table.biom
+
+

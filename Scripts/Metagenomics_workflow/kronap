@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+
+if [ -z ${FOLDER} ];              # When running outside of workflow
+then
+    read -p "Folder (e.g. NanoClinRunA_processed): " FOLDER
+else				  # When running in workflow
+    echo "Creating Krona plots from ${FOLDER1}"
+fi
+
+mkdir -p ${FOLDER}/krona
+ktImportTaxonomy -q 2 -t 3 ${FOLDER}/kraken/*.krona.kraken -o ${FOLDER}/krona/krona.html

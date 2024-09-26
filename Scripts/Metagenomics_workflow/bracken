@@ -1,0 +1,37 @@
+#!/usr/bin/bash
+
+if [ -z ${FOLDER} ];
+then
+    read -p "Folder (e.g. Metagenomics_zahn): " FOLDER
+else
+    echo "Running bracken on $FOLDER1"
+fi
+
+DATABASE=/home/nanoteam/Nano16S-scripts/k2_pluspf_16gb_20221209
+
+DIR=${FOLDER}/bracken
+mkdir -p ${DIR}
+
+for file in $(ls ${FOLDER}/kraken/*.kreport.txt)
+    do
+        sample=$(basename ${file%%.kreport.txt})
+        time bracken -d $DATABASE -t 10 -r 150 -l D  -i $file -o ${DIR}/${sample}.D.bracken -w ${DIR}/${sample}.D.txt
+        time bracken -d $DATABASE -t 10 -r 150 -l P  -i $file -o ${DIR}/${sample}.P.bracken -w ${DIR}/${sample}.P.txt
+        time bracken -d $DATABASE -t 10 -r 150 -l C  -i $file -o ${DIR}/${sample}.C.bracken -w ${DIR}/${sample}.C.txt
+        time bracken -d $DATABASE -t 10 -r 150 -l O  -i $file -o ${DIR}/${sample}.O.bracken -w ${DIR}/${sample}.O.txt
+        time bracken -d $DATABASE -t 10 -r 150 -l F  -i $file -o ${DIR}/${sample}.F.bracken -w ${DIR}/${sample}.F.txt
+        time bracken -d $DATABASE -t 10 -r 150 -l G  -i $file -o ${DIR}/${sample}.G.bracken -w ${DIR}/${sample}.G.txt
+        time bracken -d $DATABASE -t 10 -r 150 -l S  -i $file -o ${DIR}/${sample}.S.bracken -w ${DIR}/${sample}.S.txt
+    done
+
+
+mkdir -p ${DIR}_merged
+
+time python3 /home/nanoteam/programs/Bracken-2.7/analysis_scripts/combine_bracken_outputs.py --files ${DIR}/*.D.bracken -o ${DIR}_merged/merged_output.D.bracken
+time python3 /home/nanoteam/programs/Bracken-2.7/analysis_scripts/combine_bracken_outputs.py --files ${DIR}/*.P.bracken -o ${DIR}_merged/merged_output.P.bracken
+time python3 /home/nanoteam/programs/Bracken-2.7/analysis_scripts/combine_bracken_outputs.py --files ${DIR}/*.C.bracken -o ${DIR}_merged/merged_output.C.bracken
+time python3 /home/nanoteam/programs/Bracken-2.7/analysis_scripts/combine_bracken_outputs.py --files ${DIR}/*.O.bracken -o ${DIR}_merged/merged_output.O.bracken
+time python3 /home/nanoteam/programs/Bracken-2.7/analysis_scripts/combine_bracken_outputs.py --files ${DIR}/*.F.bracken -o ${DIR}_merged/merged_output.F.bracken
+time python3 /home/nanoteam/programs/Bracken-2.7/analysis_scripts/combine_bracken_outputs.py --files ${DIR}/*.G.bracken -o ${DIR}_merged/merged_output.G.bracken
+time python3 /home/nanoteam/programs/Bracken-2.7/analysis_scripts/combine_bracken_outputs.py --files ${DIR}/*.S.bracken -o ${DIR}_merged/merged_output.S.bracken
+

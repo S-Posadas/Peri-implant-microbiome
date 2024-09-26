@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+if [ -z ${FOLDER} ];              # When running outside of workflow
+then
+    read -p "Folder (e.g. Metagenomics_zahn): " FOLDER
+	read -p "Folder to trim (e.g. rawdata/trimmed): " QCDIR
+else				  # When running in workflow
+    echo "Quality control run $FOLDER1"
+fi
+
+mkdir -p ${FOLDER}/multiQC
+
+multiqc ${FOLDER}/fastQC/${QCDIR}/*_fastqc.zip -o ${FOLDER}/multiQC --filename $QCDIR
